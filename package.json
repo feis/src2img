@@ -4,8 +4,10 @@
     "test": "standard"
   },
   "dependencies": {
+    "@types/prismjs": "^1.16.0",
     "@types/puppeteer": "^1.12.4",
     "http-shutdown": "^1.2.0",
+    "prismjs": "^1.16.0",
     "puppeteer": "^1.15.0",
     "standard": "^12.0.1"
   }
