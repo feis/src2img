@@ -4,9 +4,11 @@ const puppeteer = require('puppeteer')
 const fs = require('fs')
 const prismjs = require('prismjs')
 const loadPrismLanguages = require('prismjs/components/')
+const { template } = require('lodash')
+
 loadPrismLanguages(['cpp'])
 
-function handleCssRequest (res) {
+function cssRequestHandler (res) {
   res.end(
     fs.readFileSync(
       require.resolve('prismjs/themes/prism.css')
@@ -14,44 +16,39 @@ function handleCssRequest (res) {
   )
 }
 
-async function requestHandler (req, res) {
+async function rootRequestHandler (req, res) {
   if (req.url === '/themes/prism.css') {
-    handleCssRequest(res)
+    cssRequestHandler(res)
     return
   }
 
-  const src = fs.readFileSync(process.argv[process.argv.length-1], 'utf8')
-  const highlighted = await prismjs.highlight(src, prismjs.languages.cpp, 'cpp')
-  res.end(`<html>
-  <head>
-    <link href="themes/prism.css" rel="stylesheet" />
-  </head>
-  <body>
-    <pre><code class="language-cpp">${highlighted}</code></pre>
-  </body>
-  </html>`)
+  const src = fs.readFileSync(process.argv[process.argv.length - 1], 'utf8')
+  const highlighted = prismjs.highlight(src, prismjs.languages.cpp, 'cpp')
+  res.end(template(fs.readFileSync('template.html', 'utf8'))({ highlighted }))
 }
 
 async function main () {
+  const outputFilename = 'test.png'
   const port = 3000
-  const server = httpShutdown(http.createServer(requestHandler))
+
+  const server = httpShutdown(http.createServer(rootRequestHandler))
   server.listen(port)
 
   const browser = await puppeteer.launch()
   const page = await browser.newPage()
   await page.goto(`http://127.0.0.1:${port}`)
-  await page.screenshot({ path: 'test.png', fullpage: true })
+  await page.screenshot({ path: outputFilename, fullpage: true })
   await browser.close()
+
+  process.on('SIGINT', () => {
+    server.shutdown()
+  })
 
   if (process.argv.indexOf('--server') !== -1) {
     console.log('Server mode')
-    process.on('SIGINT', () => {
-      server.shutdown()
-    })
-    return
+  } else {
+    process.kill(process.pid, 'SIGINT')
   }
-
-  server.shutdown()
 }
 
 module.exports = new Promise(main)
