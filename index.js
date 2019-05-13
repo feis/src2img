@@ -7,20 +7,21 @@ var tagsToReplace = {
   '&': '&amp;',
   '<': '&lt;',
   '>': '&gt;'
-};
-
-function replaceTag(tag) {
-  return tagsToReplace[tag] || tag;
 }
 
-function safe_tags_replace(str) {
-  return str.replace(/[&<>]/g, replaceTag);
+function replaceTag (tag) {
+  return tagsToReplace[tag] || tag
+}
+
+function escapeHtmlEntities (str) {
+  return str.replace(/[&<>]/g, replaceTag)
 }
 
 async function main () {
   const fakeroot = 'http://127.0.0.1'
 
   const isHtmlEnabled = process.argv.indexOf('--html') !== -1
+
   const inputDirArgIndex = process.argv.indexOf('--input')
   const inputDir =
     inputDirArgIndex === -1 ? 'in' : process.argv[ inputDirArgIndex + 1 ]
@@ -45,22 +46,22 @@ async function main () {
   page.on('request', request => {
     const fileRelativePath = request.url().substr(fakeroot.length)
     if (fileRelativePath === '/') {
-      request.respond({ body:  html })
+      request.respond({ body: html })
     } else {
       request.respond({
         body:
           fs.readFileSync(
             path.join(
               path.dirname(require.resolve('prismjs')),
-              fileRelativePath))})
+              fileRelativePath)) })
     }
   })
 
   for (const inputFilename of inputFilenames) {
     console.log('Processing: ' + inputFilename)
     const inputFilepath = path.join(inputDir, inputFilename)
-    const src = safe_tags_replace(fs.readFileSync(inputFilepath, 'utf8'))
-    
+    const src = escapeHtmlEntities(fs.readFileSync(inputFilepath, 'utf8'))
+
     html = template(fs.readFileSync('template.html', 'utf8'))({ src })
 
     if (isHtmlEnabled) {
