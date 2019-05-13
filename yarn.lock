@@ -690,11 +690,6 @@ hosted-git-info@^2.1.4:
   resolved "https://registry.yarnpkg.com/hosted-git-info/-/hosted-git-info-2.7.1.tgz#97f236977bd6e125408930ff6de3eec6281ec047"
   integrity sha512-7T/BxH19zbcCTa8XkMlbK5lTo1WtgkFi3GvdWEyNuc4Vex7/9Dqbnpsf4JMydcfj9HCg4zUWFTL3Za6lapg5/w==
 
-http-shutdown@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/http-shutdown/-/http-shutdown-1.2.0.tgz#df2d8067a8856e99d11e9dceb21609591e1df514"
-  integrity sha1-3y2AZ6iFbpnRHp3OshYJWR4d9RQ=
-
 https-proxy-agent@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/https-proxy-agent/-/https-proxy-agent-2.2.1.tgz#51552970fa04d723e04c56d04178c3f92592bbc0"
