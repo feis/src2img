@@ -5,6 +5,10 @@
     </style>
   </head>
   <body>
-    <pre><code class="language-cpp">${highlighted}</code></pre>
+    <pre class="line-numbers ">
+      <code class="language-cpp">
+      ${highlighted}
+      </code>
+    </pre>
   </body>
 </html>

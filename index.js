@@ -4,17 +4,16 @@ const prismjs = require('prismjs')
 const loadPrismLanguages = require('prismjs/components/')
 const { template } = require('lodash')
 const path = require('path')
-
 loadPrismLanguages(['cpp'])
 
 async function main () {
   const inputDirArgIndex = process.argv.indexOf('--input')
   const inputDir =
-    inputDirArgIndex === -1 ? 'in' : process.argv[inputDirArgIndex+1]
+    inputDirArgIndex === -1 ? 'in' : process.argv[ inputDirArgIndex + 1 ]
 
   const outputDirArgIndex = process.argv.indexOf('--output')
-  const outputDir = 
-    outputDirArgIndex === -1 ? 'out' : process.argv[outputDirArgIndex+1]
+  const outputDir =
+    outputDirArgIndex === -1 ? 'out' : process.argv[ outputDirArgIndex + 1 ]
 
   const css =
     fs.readFileSync(
@@ -37,9 +36,8 @@ async function main () {
     await page.setContent(
       template(fs.readFileSync('index.tpl', 'utf8'))({
         css,
-        highlighted,
+        highlighted
       }))
-
     const outputFilepath = path.join(outputDir, inputFilename + '.png')
     await page.screenshot({ path: outputFilepath, fullPage: true })
   }
