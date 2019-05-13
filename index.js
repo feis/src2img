@@ -35,7 +35,7 @@ async function main () {
     const highlighted = prismjs.highlight(src, prismjs.languages.cpp, 'cpp')
     const page = await browser.newPage()
     await page.setContent(
-      template(fs.readFileSync('template.html', 'utf8'))({
+      template(fs.readFileSync('index.tpl', 'utf8'))({
         css,
         highlighted,
       }))
