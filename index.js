@@ -41,7 +41,7 @@ async function main () {
       }))
 
     const outputFilepath = path.join(outputDir, inputFilename + '.png')
-    await page.screenshot({ path: outputFilepath, fullpage: true })
+    await page.screenshot({ path: outputFilepath, fullPage: true })
   }
   await browser.close()
 }
