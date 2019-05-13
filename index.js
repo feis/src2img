@@ -22,9 +22,15 @@ async function main () {
 
   const browser = await puppeteer.launch()
 
-  for (const inputFilename of fs.readdirSync(inputDir)) {
+  console.log('Input directory: ' + inputDir)
+
+  const inputFilenames =
+    fs.readdirSync(inputDir)
+      .filter(e => path.extname(e) === '.cpp')
+
+  for (const inputFilename of inputFilenames) {
+    console.log('Processing: ' + inputFilename)
     const inputFilepath = path.join(inputDir, inputFilename)
-    console.log(inputFilepath)
     const src = fs.readFileSync(inputFilepath, 'utf8')
     const highlighted = prismjs.highlight(src, prismjs.languages.cpp, 'cpp')
     const page = await browser.newPage()
@@ -35,7 +41,6 @@ async function main () {
       }))
 
     const outputFilepath = path.join(outputDir, inputFilename + '.png')
-    console.log(outputFilepath)
     await page.screenshot({ path: outputFilepath, fullpage: true })
   }
   await browser.close()
