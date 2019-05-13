@@ -1,12 +1,26 @@
 const puppeteer = require('puppeteer')
 const fs = require('fs')
-const prismjs = require('prismjs')
-const loadPrismLanguages = require('prismjs/components/')
 const { template } = require('lodash')
 const path = require('path')
-loadPrismLanguages(['cpp'])
+
+var tagsToReplace = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;'
+};
+
+function replaceTag(tag) {
+  return tagsToReplace[tag] || tag;
+}
+
+function safe_tags_replace(str) {
+  return str.replace(/[&<>]/g, replaceTag);
+}
 
 async function main () {
+  const fakeroot = 'http://127.0.0.1'
+
+  const isHtmlEnabled = process.argv.indexOf('--html') !== -1
   const inputDirArgIndex = process.argv.indexOf('--input')
   const inputDir =
     inputDirArgIndex === -1 ? 'in' : process.argv[ inputDirArgIndex + 1 ]
@@ -14,10 +28,6 @@ async function main () {
   const outputDirArgIndex = process.argv.indexOf('--output')
   const outputDir =
     outputDirArgIndex === -1 ? 'out' : process.argv[ outputDirArgIndex + 1 ]
-
-  const css =
-    fs.readFileSync(
-      require.resolve('prismjs/themes/prism.css'))
 
   const browser = await puppeteer.launch()
 
@@ -27,17 +37,39 @@ async function main () {
     fs.readdirSync(inputDir)
       .filter(e => path.extname(e) === '.cpp')
 
+  const page = await browser.newPage()
+  await page.setRequestInterception(true)
+
+  let html = ''
+
+  page.on('request', request => {
+    const fileRelativePath = request.url().substr(fakeroot.length)
+    if (fileRelativePath === '/') {
+      request.respond({ body:  html })
+    } else {
+      request.respond({
+        body:
+          fs.readFileSync(
+            path.join(
+              path.dirname(require.resolve('prismjs')),
+              fileRelativePath))})
+    }
+  })
+
   for (const inputFilename of inputFilenames) {
     console.log('Processing: ' + inputFilename)
     const inputFilepath = path.join(inputDir, inputFilename)
-    const src = fs.readFileSync(inputFilepath, 'utf8')
-    const highlighted = prismjs.highlight(src, prismjs.languages.cpp, 'cpp')
-    const page = await browser.newPage()
-    await page.setContent(
-      template(fs.readFileSync('index.tpl', 'utf8'))({
-        css,
-        highlighted
-      }))
+    const src = safe_tags_replace(fs.readFileSync(inputFilepath, 'utf8'))
+    
+    html = template(fs.readFileSync('template.html', 'utf8'))({ src })
+
+    if (isHtmlEnabled) {
+      fs.writeFileSync(
+        path.join(outputDir, inputFilename + '.html'),
+        html)
+    }
+
+    await page.goto(fakeroot)
     const outputFilepath = path.join(outputDir, inputFilename + '.png')
     await page.screenshot({ path: outputFilepath, fullPage: true })
   }
