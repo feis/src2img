@@ -39,6 +39,7 @@ async function main () {
       .filter(e => path.extname(e) === '.cpp')
 
   const page = await browser.newPage()
+  await page.setViewport({width: 1280, height: 1})
   await page.setRequestInterception(true)
 
   let html = ''
@@ -47,6 +48,8 @@ async function main () {
     const fileRelativePath = request.url().substr(fakeroot.length)
     if (fileRelativePath === '/') {
       request.respond({ body: html })
+    } else if (fileRelativePath === '/prism.css') {
+      request.respond({ body: fs.readFileSync('prism.css') })
     } else {
       request.respond({
         body:
@@ -72,7 +75,10 @@ async function main () {
 
     await page.goto(fakeroot)
     const outputFilepath = path.join(outputDir, inputFilename + '.png')
-    await page.screenshot({ path: outputFilepath, fullPage: true })
+    await page.screenshot({
+      path: outputFilepath,
+      fullPage: true,
+      omitBackground: true })
   }
   await browser.close()
 }
