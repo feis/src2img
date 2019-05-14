@@ -17,18 +17,28 @@ function escapeHtmlEntities (str) {
   return str.replace(/[&<>]/g, replaceTag)
 }
 
+function getParam (paramName, defaultValue) {
+  const index = process.argv.indexOf(paramName)
+  return index === -1 ? defaultValue : process.argv[ index + 1 ]
+}
+
+function hasParam (paramName) {
+  return process.argv.indexOf(paramName) !== -1
+}
+
+function readConfig (configFilename) {
+  return null
+}
+
 async function main () {
   const fakeroot = 'http://127.0.0.1'
 
-  const isHtmlEnabled = process.argv.indexOf('--html') !== -1
+  const isHtmlEnabled = hasParam('--html')
+  const inputDir = getParam('--input', 'in')
+  const outputDir = getParam('--output', 'out')
+  const configFile = getParam('--config', null)
 
-  const inputDirArgIndex = process.argv.indexOf('--input')
-  const inputDir =
-    inputDirArgIndex === -1 ? 'in' : process.argv[ inputDirArgIndex + 1 ]
-
-  const outputDirArgIndex = process.argv.indexOf('--output')
-  const outputDir =
-    outputDirArgIndex === -1 ? 'out' : process.argv[ outputDirArgIndex + 1 ]
+  const config = readConfig(configFile)
 
   const browser = await puppeteer.launch()
 
@@ -39,7 +49,7 @@ async function main () {
       .filter(e => ['.cpp', '.cc'].includes(path.extname(e)))
 
   const page = await browser.newPage()
-  await page.setViewport({width: 1920, height: 1})
+  await page.setViewport({ width: 1920, height: 1 })
   await page.setRequestInterception(true)
 
   let html = ''
@@ -63,7 +73,7 @@ async function main () {
   for (const inputFilename of inputFilenames) {
     console.log('Processing: ' + inputFilename)
     const inputFilepath = path.join(inputDir, inputFilename)
-    const truncated = escapeHtmlEntities(fs.readFileSync(inputFilepath, 'utf8') ).trim().split('\n')
+    const truncated = escapeHtmlEntities(fs.readFileSync(inputFilepath, 'utf8')).trim().split('\n')
     truncated.shift()
     const src = truncated.join('\n')
     const startLine = 2
