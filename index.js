@@ -36,10 +36,10 @@ async function main () {
 
   const inputFilenames =
     fs.readdirSync(inputDir)
-      .filter(e => path.extname(e) === '.cpp')
+      .filter(e => ['.cpp', '.cc'].includes(path.extname(e)))
 
   const page = await browser.newPage()
-  await page.setViewport({width: 1280, height: 1})
+  await page.setViewport({width: 1920, height: 1})
   await page.setRequestInterception(true)
 
   let html = ''
@@ -63,9 +63,12 @@ async function main () {
   for (const inputFilename of inputFilenames) {
     console.log('Processing: ' + inputFilename)
     const inputFilepath = path.join(inputDir, inputFilename)
-    const src = escapeHtmlEntities(fs.readFileSync(inputFilepath, 'utf8'))
+    const truncated = escapeHtmlEntities(fs.readFileSync(inputFilepath, 'utf8') ).trim().split('\n')
+    truncated.shift()
+    const src = truncated.join('\n')
+    const startLine = 2
 
-    html = template(fs.readFileSync('template.html', 'utf8'))({ src })
+    html = template(fs.readFileSync('template.html', 'utf8'))({ src, startLine })
 
     if (isHtmlEnabled) {
       fs.writeFileSync(

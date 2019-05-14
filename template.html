@@ -4,7 +4,8 @@
     <link href="plugins/line-numbers/prism-line-numbers.css" rel="stylesheet" />
     <style type="text/css">
       body {
-        font-size: 1.6em;
+        font-size: 3em;
+        font-weight: bold;
         padding: 0;
         margin:  0;
       }
@@ -14,7 +15,7 @@
     </style>
   </head>
   <body>
-    <pre class="line-numbers"><code class="language-cpp">${src}</code></pre>
+    <pre class="line-numbers" data-start="${startLine}"><code class="language-cpp">${src}</code></pre>
     <script src="prism.js"></script>
     <script src="plugins/line-numbers/prism-line-numbers.min.js"></script>
     <script src="components/prism-c.min.js"></script>
