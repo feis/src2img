@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-TW">
+  <head>
+    <link href="prism.css" rel="stylesheet" />
+    <meta charset="utf-8"/>
+    <link href="plugins/line-numbers/prism-line-numbers.css" rel="stylesheet" />
+    <style type="text/css">
+      body {
+        font-size: 2.5em;
+        font-weight: bold;
+        padding: 0;
+        margin:  0;
+      }
+      pre.line-numbers {
+        margin: 0;
+      }
+      .line-numbers-rows > span {
+        line-height: 1.26;
+      }
+    </style>
+  </head>
+  <body>
+    <pre class="line-numbers" data-start="${startLine}"><code class="language-cpp">${src}</code></pre>
+    <script src="prism.js"></script>
+    <script src="plugins/line-numbers/prism-line-numbers.min.js"></script>
+    <script src="components/prism-go.min.js"></script>
+    <script src="components/prism-c.min.js"></script>
+    <script src="components/prism-cpp.min.js"></script>
+    <script src="components/prism-csharp.min.js"></script>
+    <script src="components/prism-java.min.js"></script>
+    <script src="components/prism-python.min.js"></script>
+  </body>
+</html>

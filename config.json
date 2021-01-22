@@ -1,5 +1,10 @@
-[
 {
-  "filename": "permute_v6.py"
+  "language": "cpp",
+  "input": "cpp",
+  "output": "out",
+  "sources": [
+    {
+      "filename": "init_v1.cc"
+    }
+  ]
 }
-]
